@@ -11,8 +11,34 @@
             const canvas = document.querySelector("canvas");
             const ctx = canvas.getContext("2d");
 
-            ctx.arc(100, 100, 10, 0, 2*Math.PI);
-            ctx.fill();
+            const obj = {
+                x: [0, 0],
+                v: [1, 1],
+                m: 1,
+                c: "blue",
+                draw: () => {
+                    ctx.fillStyle = this.c;
+                    ctx.arc(this.x[0], this.x[1], this.m, 0, 2*Math.PI);
+                    ctx.fill();
+                },
+                update: () => {
+                    this.x = vadd(this.x, this.v);
+                }
+            }
+
+            const draw = () => {
+                obj.draw();
+                obj.update();
+                window.requestAnimationFrame();
+                draw();
+            }
+
+            draw();
+
+            const vadd = (v, u) => [
+                v[0] + u[0],
+                v[1] + u[1],
+            ];
         </script>
     </body>
 </html>
