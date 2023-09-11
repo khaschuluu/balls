@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Balls</title>
+    </head>
+    <body>
+        <h1>Welcome to Balls!</h1>
+        <p>Physics symulator</p>
+        <canvas></canvas>
+        <script>
+            const canvas = document.querySelector("canvas");
+            const ctx = canvas.getContext("2d");
+
+            ctx.arc(100, 100, 10, 0, 2*Math.PI);
+            ctx.fill();
+        </script>
+    </body>
+</html>
