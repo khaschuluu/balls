@@ -14,7 +14,7 @@
             const obj = {
                 x: [0, 0],
                 v: [1, 1],
-                m: 1,
+                m: 10,
                 c: "blue",
                 draw: () => {
                     ctx.fillStyle = this.c;
@@ -27,6 +27,7 @@
             }
 
             const draw = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 obj.draw();
                 obj.update();
                 window.requestAnimationFrame();
