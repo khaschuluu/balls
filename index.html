@@ -10,6 +10,7 @@
         <script>
             const canvas = document.getElementById("canvas");
             const ctx = canvas.getContext("2d");
+
             let obj = {
                 loc: [0, 0],
                 v: [0, 0],
@@ -46,6 +47,7 @@
                             10 + i * (canvas.width - 20)/row,
                             10 + l * (canvas.height - 20)/col,
                         ],
+                        color: `#${Math.floor(Math.random()*16777215).toString(16)}`,
                     });
                 }
             }
