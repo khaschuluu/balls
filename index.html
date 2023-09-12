@@ -6,40 +6,108 @@
     <body>
         <h1>Welcome to Balls!</h1>
         <p>Physics symulator</p>
-        <canvas></canvas>
+        <canvas id="canvas"></canvas>
         <script>
-            const canvas = document.querySelector("canvas");
+            const canvas = document.getElementById("canvas");
             const ctx = canvas.getContext("2d");
-
-            const obj = {
-                x: [0, 0],
-                v: [1, 1],
-                m: 10,
-                c: "blue",
-                draw: () => {
-                    ctx.fillStyle = this.c;
-                    ctx.arc(this.x[0], this.x[1], this.m, 0, 2*Math.PI);
+            let obj = {
+                loc: [0, 0],
+                v: [0, 0],
+                r: 3,
+                color: "red",
+                draw: function() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.loc[0], this.loc[1], this.r, 0, 2 * Math.PI);
                     ctx.fill();
                 },
-                update: () => {
-                    this.x = vadd(this.x, this.v);
+                update: function() {
+                    if (this.loc[0] < this.r || this.loc[0] > canvas.width - this.r) {
+                        this.v[0] *= -1;
+                    }
+                    if (this.loc[1] < this.r || this.loc[1] > canvas.height - this.r) {
+                        this.v[1] *= -1;
+                    }
+                    this.loc = add(this.loc, this.v);
+                },
+            };
+
+            let objs = [];
+            let row = 20;
+            let col = 10;
+
+            for (let i = 0; i < row; i=i+1) {
+                for (let l = 0; l < col; l=l+1) {
+                    objs.push({
+                        __proto__: obj,
+                        loc: [
+                            // Math.random() * canvas.width,
+                            // Math.random() * canvas.height,
+                            10 + i * (canvas.width - 20)/row,
+                            10 + l * (canvas.height - 20)/col,
+                        ],
+                    });
                 }
             }
 
-            const draw = () => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                obj.draw();
-                obj.update();
-                window.requestAnimationFrame();
-                draw();
+            objs[objs.length-1].v = [-1, -1];
+
+            function update() {
+                for (let i = 0; i < objs.length-1; i=i+1) {
+                    for (let l = i+1; l < objs.length; l=l+1) {
+                        const reloc = subtract(objs[l].loc, objs[i].loc);
+                        const d = (reloc[0]**2 + reloc[1]**2)**(1/2);
+                        if (d < objs[i].r + objs[l].r) {
+                            const normal = scalar_multiply(1/d, reloc);
+                            const relv = subtract(objs[i].v, objs[l].v);
+                            const dotProduct = dot(relv, normal);
+
+                            const relF = scalar_multiply(dotProduct, normal);
+                            objs[i].v = add(subtract(relv, relF), objs[l].v);
+                            objs[l].v = add(relF, objs[l].v);
+                        }
+                    }
+                }
+
+                objs.forEach((obj) => obj.update());
+            }
+
+            function draw() {
+                ctx.globalCompositeOperation = "destination-over";
+                ctx.clearRect(0, 0, 300, 300); // clear canvas
+
+                objs.forEach((obj) => obj.draw());
+
+                update();
+                window.requestAnimationFrame(draw);
             }
 
             draw();
 
-            const vadd = (v, u) => [
-                v[0] + u[0],
-                v[1] + u[1],
-            ];
+            // a and b must be vector
+            function add(a, b) {
+                return [
+                    a[0] + b[0],
+                    a[1] + b[1],
+                ];
+            }
+
+            // a is scalar, b is vector
+            function scalar_multiply(a, b) {
+                return [
+                    a * b[0],
+                    a * b[1],
+                ]
+            }
+
+            // a and b are both vectors
+            function subtract(a, b) {
+                return add(a, scalar_multiply(-1, b));
+            }
+
+            function dot(a, b) {
+                return a[0] * b[0] + a[1] * b[1];
+            }
         </script>
     </body>
 </html>
